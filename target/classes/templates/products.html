@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link th:href="@{/css/style.css}" href="/css/style.css" rel="stylesheet" type="text/css" />
+
+<script>
+	function closeProductModal() {
+
+		$("#productModal").modal("hide");
+	}
+
+	function filtrar() {
+
+		var url = '/product/filter';
+
+		if ($('#p_venue').val() != '') {
+
+			if ($('#p_venue').val().trim() != '') {
+
+				url = url + '/' + $('#p_venue').val();
+			} else {
+				url = '/products';
+			}
+		} else {
+			url = '/products';
+		}
+
+		$("#results-block").load(url);
+	}
+
+	function openProductModal(id) {
+
+		$.ajax({
+
+			url : "/product/detail/" + id,
+
+			success : function(data) {
+
+				$("#productModalHolder").html(data);
+				$("#productModal").modal("show");
+			}
+		});
+	}
+</script>
+
+
+</head>
+<body>
+	<div class="row text-center">
+		<div class="row">
+			<h3>Lista de Produtos</h3>
+		</div>
+	</div>
+	<div class="panel panel-default" style="margin: 20px 50px 20px 50px">
+		<div class="panel-heading">
+			<h1 class="panel-title">Seleção de Produtos</h1>
+		</div>
+		<div class="panel-body">
+			<div class="form-group">
+				<label>Filtro:</label> <input type="text" id="p_venue"
+					class="form-control" placeholder="Nome" />
+				<button type="button" th:onclick="'javascript:filtrar();'"
+					class="btn btn-primary">Buscar</button>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-default" style="margin: 20px 50px 20px 50px">
+		<div class="panel-heading">
+			<h1 class="panel-title">Produtos</h1>
+		</div>
+		<div th:if="${not #lists.isEmpty(products)}"
+			th:fragment="listProductfragment" id="results-block">
+			<div class="panel-body">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Venue</th>
+							<th></th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="product : ${products}">
+							<td th:text="${product.venue}">Venue</td>
+							<td><a
+								th:onclick="'javascript:openProductModal(\'' + ${product.id} +'\');'"
+								class="btn-floating waves-effect waves-light yellow"><i
+									class="material-icons">Ver Detalhes do Produto</i> </a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div id="productModalHolder"></div>
+	<div id="productModal" class="modal fade" role="dialog"
+		th:fragment="modalContents">
+		<div class="modalDialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="row text-center">
+						<div class="row">
+							<h3>Detalhes de Produto</h3>
+						</div>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="panel panel-default" style="margin: 100px">
+						<div class="row">
+							<div class="col-lg-12 col-md-12 col-sm-12">
+								<div class="form-group">
+									<label for="id">Product Id :</label> <span
+										th:text="${product?.id}"></span>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-12 col-md-12 col-sm-12">
+								<div class="form-group">
+									<label for="venue">Product Name :</label> <span
+										th:text="${product?.venue}"></span>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-12 col-md-12 col-sm-12">
+								<div class="form-group">
+									<label>Date Product :</label> <span th:if="${product != null}">
+										<span
+										th:text="${#dates.format(product?.pdate, 'dd-MMM-yyyy')}"></span>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button th:onclick="'javascript:closeProductModal();'"
+				class="modal-action modal-close waves-effect waves-light btn-floating red">
+				<i class="material-icons">close</i>
+			</button>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+.modalDialog {
+	width: 50%;
+	position: absolute;
+	left: 25%;
+	top: 25%;
+}
+
+.modal-footer {
+	position: absolute;
+	left: 65%;
+	top: 75%;
+}
